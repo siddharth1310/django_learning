@@ -1,0 +1,12 @@
+django
+psycopg2
+django-oauth-toolkit
+djangorestframework
+django-encrypted-model-fields
+django-filter
+drf-spectacular
+django-cors-headers
+django-auditlog
+python-dotenv
+django-crispy-forms
+markdown

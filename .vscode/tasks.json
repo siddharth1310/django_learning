@@ -1,0 +1,202 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run FastAPI (uvicorn)",
+      "type": "shell",
+      "command": "${config:python.pythonPath}",
+      "args": [
+        "-m",
+        "uvicorn",
+        "main:app",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8001",
+        "--reload"
+      ],
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run FastAPI (uv)",
+      "type": "shell",
+      "command": "uv",
+      "args": [
+        "run",
+        "fastapi",
+        "run",
+        "app/main.py",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8001",
+        "--reload"
+      ],
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Unit Test (pytest)",
+      "type": "shell",
+      "command": "${config:python.pythonPath}",
+      "args": [
+        "-m",
+        "pytest",
+        "-v"
+      ],
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Unit Test (uv)",
+      "type": "shell",
+      "command": "uv",
+      "args": [
+        "run",
+        "pytest",
+        "-v"
+      ],
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Alembic : Make Migration",
+      "type": "shell",
+      "command": "${config:python.pythonPath}",
+      "args": [
+        "-m",
+        "alembic",
+        "revision",
+        "--autogenerate",
+        "-m",
+        "\"${input:message}\""
+      ],
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Alembic : Upgrade DB",
+      "type": "shell",
+      "command": "${config:python.pythonPath}",
+      "args": [
+        "-m",
+        "alembic",
+        "upgrade",
+        "head"
+      ],
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Keycloak : Start Dev",
+      "type": "shell",
+      // For Windows -
+      // "command": "${config:keycloak.directorypath.bin}/kc.bat",
+      // For Linux -
+      "command": "${config:keycloak.directorypath.bin}/kc.sh",
+      "args": [
+        "start-dev"
+      ],
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Django - Run Server",
+      "type": "shell",
+      "command": "${config:python.pythonPath}",
+      "args": [
+        "manage.py",
+        "runserver",
+        "8080"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "group": {
+        "kind": "build"
+      }
+    },
+    {
+      "label": "Django - Migrate",
+      "type": "shell",
+      "command": "${config:python.pythonPath}",
+      "args": [
+        "manage.py",
+        "migrate"
+      ],
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Django - Make Migrations",
+      "type": "shell",
+      "command": "${config:python.pythonPath}",
+      "args": [
+        "manage.py",
+        "makemigrations"
+      ],
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Django - Create Superuser",
+      "type": "shell",
+      "command": "${config:python.pythonPath}",
+      "args": [
+        "manage.py",
+        "createsuperuser"
+      ],
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Django - Start New App",
+      "type": "shell",
+      "command": "${config:python.pythonPath}",
+      "args": [
+        "manage.py",
+        "startapp",
+        "${input:appName}"
+      ],
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "message",
+      "type": "promptString",
+      "description": "Migration Message"
+    },
+    {
+      "id": "appName",
+      "type": "promptString",
+      "description": "Enter the Django app name:"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+  "python.pythonPath": "/home/siddharth/python_virtual_envs/django_starter/bin/python",
+  "python.venvPath": "/home/siddharth/python_virtual_envs/django_starter/",
+  "python.pythonBinPath": "/home/siddharth/python_virtual_envs/django_starter/bin",
+
+  //   Enable below line when working on windows machine as we have packages installed under 'Scripts'
+  //   "python.pythonScriptPath" : "C:\\Users\\Siddharth_Acer_Swift_3\\python_virtual_envs\\FastAPI_Learning\\Scripts\\",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.typeCheckingMode": "standard",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/__pycache__": true,
+    "**/.venv": true,
+    "node_modules": true,
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true,
+    "**/.venv": true,
+    "**/__pycache__": true,
+  },
+  "keycloak.directorypath.bin": "/home/siddharth/Documents/FastAPI_Learning/keycloak-26.5.2/bin",
+}
