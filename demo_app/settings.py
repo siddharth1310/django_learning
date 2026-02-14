@@ -108,9 +108,9 @@ INSTALLED_APPS = [
     # NOTE - To use rest_wind
     # rename "templates\rest_framework\api1.html" to "templates\rest_framework\api.html"
     # rename "templates\rest_framework\login1.html" to "templates\rest_framework\login.html"
-    "rest_wind", 
+    # "rest_wind", 
     
-    "drf_redesign", 
+    # "drf_redesign", 
     
     "drf_material",
     # -------------- BELOW APPS FOR DIFFERENT VARIETIES OF UI FOR BACKEND DRF ---------------------- #
