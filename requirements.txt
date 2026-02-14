@@ -10,3 +10,8 @@ django-auditlog
 python-dotenv
 django-crispy-forms
 markdown
+drf-material
+drf-restwind
+drf-redesign
+crispy-bootstrap4
+drf-spectacular-sidecar
