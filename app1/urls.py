@@ -46,8 +46,11 @@ router.register(r"snippets", SnippetViewSet, basename = "snippet")
 
 urlpatterns = [
     # path("", index, name = "index"), 
+    
+    # NOTE - below endpoints not required if you are using ViewSet classes
     # path("", api_root), 
     
+    # NOTE - below endpoints not required if you are using ViewSet classes
     # path("snippets/", snippet_list), 
     # path("snippets/<int:pk>/", snippet_detail), 
     

@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from rest_framework.reverse import reverse
+from django_filters import UnknownFieldBehavior, rest_framework as filters
 
 # Custom created imports
 from app1.permissions import IsOwnerOrReadOnly
@@ -383,6 +384,63 @@ class SnippetHighlight(generics.GenericAPIView):
         return Response(snippet.highlighted)
 
 
+# ------------------------------ FILTERS IN DRF ----------------------------------------- #
+
+# Custom filter method which can be defined out of the class scope.
+# def filter_not_empty(queryset, name, value):
+#     lookup = "__".join([name, "isnull"])
+#     return queryset.filter(**{lookup : False})
+
+"""
+class SnippetFilter(filters.FilterSet):
+    class Meta:
+        model = Snippet
+        fields = ["language", "style"]
+
+IS EQUIVALENT TO
+
+class SnippetViewSet(viewsets.ModelViewSet):
+    # ----------- OTHER DEFINITIONS ----------- #
+    filterset_fields = ("language", "style")
+"""
+
+
+class SnippetFilter(filters.FilterSet):
+    min_price = filters.NumberFilter(field_name = "price", lookup_expr = "gte")
+    max_price = filters.NumberFilter(field_name = "price", lookup_expr = "lte")
+    line_nos = filters.BooleanFilter(field_name = "linenos", label = "Is LineNos", lookup_expr = "exact")
+    
+    """  Filter for Books by if books are published or not  """
+    # published = filters.BooleanFilter(field_name = "published_on", method = filter_not_empty)
+    
+    """  Filter for Books by if books are published or not  """
+    # published = filters.BooleanFilter(field_name = "published_on", method = 'filter_not_empty')
+    
+    # def filter_not_empty(self, queryset, name, value):
+    #     # Construct the full lookup expression.
+    #     lookup = "__".join([name, "isnull"])
+    #     return queryset.filter(**{lookup : False})
+
+    #     # alternatively you could opt to hardcode the lookup. e.g,
+    #     # return queryset.filter(published_on__isnull = False)
+    
+    
+    class Meta:
+        model = Snippet
+        
+        # Exclude one field for rest of the other to be used for filtration
+        # exclude = ["style"]
+        
+        # fields = ["title", "language"]
+        
+        fields = {
+            "title" : ["exact", "contains"], 
+            "language" : ["exact", "contains"],
+        }
+        
+        unknown_field_behavior = UnknownFieldBehavior.WARN
+
+
 # ------------------------------------- TUTORIAL 6: Viewsets & Routers ----------------------------------------- #
 """
 ViewSet classes are almost the same thing as view classes, except that they provide operations such as retrieve, 
@@ -404,19 +462,34 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserSerializer
 
 
+"""
+This time we have used the ModelViewSet class in order to get the complete set of default read and write operations.
+Notice that we have also used the @action decorator to create a custom action, named highlight. This decorator can be 
+used to add any custom endpoints that don't fit into the standard create/update/delete style.
+
+Custom actions which use the @action decorator will respond to GET request by default. We can use the methods arguments
+if we wanted an action that respond to POST requests.
+
+The URLs for custom actions by default depend on the method name itself. If you want to change the way url should be 
+constructed, you can include url_path as a decorator keyword argument.
+"""
 class SnippetViewSet(viewsets.ModelViewSet):
     """
     ModelViewSet provides full CRUD: list, create, retrieve, update, destroy actions.
     Router generates standard RESTful URLs automatically:
-    GET    /snippets/          → list
-    POST   /snippets/          → create  
-    GET    /snippets/{pk}/     → retrieve
-    PUT    /snippets/{pk}/     → update
-    DELETE /snippets/{pk}/     → destroy
+    - GET    /snippets/          → list
+    - POST   /snippets/          → create  
+    - GET    /snippets/{pk}/     → retrieve
+    - PUT    /snippets/{pk}/     → update
+    - DELETE /snippets/{pk}/     → destroy
     """
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+    
+    # Filter section
+    filter_backends = (filters.DjangoFilterBackend, )
+    filterset_class = SnippetFilter
     
     def perform_create(self, serializer):
         """
