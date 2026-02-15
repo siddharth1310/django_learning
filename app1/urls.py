@@ -3,9 +3,11 @@
 # Dependent software imports
 from django.urls import path
 from rest_framework import routers
+from rest_framework.urlpatterns import format_suffix_patterns
 
 # Custom created imports
 from app1.views import (
+    CreateRequestFromJSON,
     QuestionViewSet, 
     ChoiceViewSet, 
     AnswersViewSet,
@@ -62,4 +64,13 @@ urlpatterns = [
     # NOTE - below endpoints not required if you are using ViewSet classes
     # path("users/", UserList.as_view(), name = "user-list"), 
     # path("users/<int:pk>/", UserDetail.as_view(), name = "user-detail"), 
+    
+    # NOTE - List down custom endpoints
+    path("testing_endpoint/", CreateRequestFromJSON.as_view(), name = "testing_endpoint"),
 ]
+
+
+# Will allow additional endpoints like -
+# http://127.0.0.1:8080/app1/snippets.json/
+# http://127.0.0.1.8080/app1/snippets.api/
+urlpatterns = format_suffix_patterns(urlpatterns)

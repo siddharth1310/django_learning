@@ -1,17 +1,17 @@
 # Python base imports - Default ones
 
 # Dependent software imports
-from rest_framework import viewsets, status, mixins, generics, renderers
-from rest_framework.parsers import JSONParser
-from django.http import Http404, HttpResponse, JsonResponse
-from drf_spectacular.utils import extend_schema
 from rest_framework import permissions
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view, action
-from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.contrib.auth.models import User
 from rest_framework.reverse import reverse
+from django.contrib.auth.models import User
+from rest_framework.response import Response
+from rest_framework.parsers import JSONParser
+from drf_spectacular.utils import extend_schema
+from django.views.decorators.csrf import csrf_exempt
+from django.http import Http404, HttpResponse, JsonResponse
+from rest_framework import viewsets, status, mixins, generics, renderers
+from rest_framework.decorators import api_view, action, permission_classes
 from django_filters import UnknownFieldBehavior, rest_framework as filters
 
 # Custom created imports
@@ -508,3 +508,13 @@ class SnippetViewSet(viewsets.ModelViewSet):
         """
         snippet = self.get_object()
         return Response(snippet.highlighted)
+
+
+@permission_classes([permissions.IsAuthenticated])
+class CreateRequestFromJSON(APIView):
+    def post (self, request, format = None):
+        try:
+            input_request = request.data
+            return Response(input_request, status = status.HTTP_200_OK)
+        except Exception:
+            return Response(status = status.HTTP_400_BAD_REQUEST)
