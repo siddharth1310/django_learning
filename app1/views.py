@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 # Custom created imports
+from app1.permissions import IsOwnerOrReadOnly
 from app1.models import Question, Choice, Answers, Snippet
 from app1.serializers import QuestionSerializer, ChoiceSerializer, AnswersSerializer, SnippetSerializer
 
@@ -198,7 +199,7 @@ New -> "DEFAULT_PERMISSION_CLASSES" : ["rest_framework.permissions.IsAuthenticat
 
 # ----------------------------------------- CLASS BASED VIEW IMPLEMENTATION -------------------------------- #
 
-# 1st way
+# ----------------------------------------- 1st way -------------------------------------------------------- #
 # class SnippetList(APIView):
 #     def get(self, request, format = None):
 #         snippets = Snippet.objects.all()
@@ -239,29 +240,66 @@ New -> "DEFAULT_PERMISSION_CLASSES" : ["rest_framework.permissions.IsAuthenticat
 #         snippet = self.get_object(pk)
 #         snippet.delete()
 #         return Response(status = status.HTTP_204_NO_CONTENT)
+# ----------------------------------------- 1st way -------------------------------------------------------- #
 
 
-# 2nd way
-class SnippetList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+# ----------------------------------------- 2nd way -------------------------------------------------------- #
+# class SnippetList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+#     queryset = Snippet.objects.all()
+#     serializer_class = SnippetSerializer
+    
+#     def get(self, request, *args, **kwargs):
+#         return self.list(request, *args, **kwargs)
+    
+#     def post(self, request, *args, **kwargs):
+#         return self.create(request, *args, **kwargs)
+
+
+# class SnippetDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
+#     queryset = Snippet.objects.all()
+#     serializer_class = SnippetSerializer
+    
+#     def get(self, request, *args, **kwargs):
+#         return self.retrieve(request, *args, **kwargs)
+    
+#     def put(self,request, *args, **kwargs):
+#         return self.update(request, *args, **kwargs)
+    
+#     def delete(self, request, *args, **kwargs):
+#         return self.destroy(request, *args, **kwargs)
+# ----------------------------------------- 2nd way -------------------------------------------------------- #
+
+
+# ----------------------------------------- 3rd way -------------------------------------------------------- #
+class SnippetList(generics.ListCreateAPIView):
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
     
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+    # Only allow API access when the user is authenticated
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
     
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+    # Only when the user is authenticated but still can read the data
+    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+    # permission_classes = [permissions.IsAuthenticated, permissions.DjangoModelPermissions]
+    
+    """
+    Associating Snippets with Users
+    Right now, if we create a code snippet, there would be no way of associating the user that 
+    created the snippet, with the snippet instance. The user isn't sent as part of the serialized
+    representation, but is instead a property of the incoming request.
+    The way we deal with that is by overriding a .perform_create() method on our snippet views,
+    that allows us to modify how the instance save is managed, and handle any information that is 
+    implicit in the incoming request or requested URL.
+    """
+    def perform_create(self, serializer):
+        serializer.save(owner = self.request.user)
 
 
-class SnippetDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
+class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
     
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
-    
-    def put(self,request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
-    
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
+    # Only allow API access when the user is authenticated
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+# ----------------------------------------- 3rd way -------------------------------------------------------- #
