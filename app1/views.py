@@ -7,7 +7,7 @@ from django.http import Http404, HttpResponse, JsonResponse
 from drf_spectacular.utils import extend_schema
 from rest_framework import permissions
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
@@ -378,6 +378,60 @@ class SnippetHighlight(generics.GenericAPIView):
         Custom .get() returns the pre-rendered highlighted HTML from snippet instance.
         get_object() provides standard lookup + permission checks.
         No serialization needed - highlighted field is already HTML-ready.
+        """
+        snippet = self.get_object()
+        return Response(snippet.highlighted)
+
+
+# ------------------------------------- TUTORIAL 6: Viewsets & Routers ----------------------------------------- #
+"""
+ViewSet classes are almost the same thing as view classes, except that they provide operations such as retrieve, 
+or update, and not method handlers such as get or put.
+A ViewSet class is only bound to a set of method handlers at the last moment, when it is instantiated into a set
+of views, typically by using a Router class which handles the complexities of defining the URL conf for you.
+"""
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ReadOnlyModelViewSet provides `list` and `retrieve` actions automatically.
+    Perfect for User endpoints where we only need read access (no create/update/delete).
+    
+    Router generates:
+    GET /users/          → list
+    GET /users/{pk}/     → retrieve
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class SnippetViewSet(viewsets.ModelViewSet):
+    """
+    ModelViewSet provides full CRUD: list, create, retrieve, update, destroy actions.
+    Router generates standard RESTful URLs automatically:
+    GET    /snippets/          → list
+    POST   /snippets/          → create  
+    GET    /snippets/{pk}/     → retrieve
+    PUT    /snippets/{pk}/     → update
+    DELETE /snippets/{pk}/     → destroy
+    """
+    queryset = Snippet.objects.all()
+    serializer_class = SnippetSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+    
+    def perform_create(self, serializer):
+        """
+        Automatically associates newly created snippets with the authenticated user.
+        Called by create() action during serializer.save().
+        """
+        serializer.save(owner = self.request.user)
+    
+    @action(detail = True, renderer_classes = [renderers.StaticHTMLRenderer])
+    def highlight(self, request, *args, **kwargs):
+        """
+        Custom @action decorator creates new endpoint: /snippets/{pk}/highlight/
+        detail=True → requires snippet pk (runs get_object())
+        Returns highlighted HTML instead of JSON (StaticHTMLRenderer)
+        Router auto-generates URL name: "snippet-highlight"
         """
         snippet = self.get_object()
         return Response(snippet.highlighted)
