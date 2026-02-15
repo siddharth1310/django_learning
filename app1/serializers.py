@@ -20,7 +20,7 @@ class SnippetSerializer(serializers.Serializer):
     linenos = serializers.BooleanField(required = False)
     language = serializers.ChoiceField(choices = LANGUAGE_CHOICES, default = "python")
     style = serializers.ChoiceField(choices = STYLE_CHOICES, default = "friendly")
-    highlighted = serializers.CharField(max_length = 1000)
+    highlighted = serializers.CharField(read_only = True, max_length = 1000)
     email = serializers.EmailField()
     results = serializers.CharField(max_length = 1000)
     price = serializers.IntegerField()
