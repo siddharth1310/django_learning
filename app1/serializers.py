@@ -94,3 +94,11 @@ class AnswersSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Answers
         fields = ["id", "answer", "created_by"]
+
+
+class UserSerializer(serializers.ModelSerializer):
+    user_snippets = SnippetSerializer(many = True, source = "snippets", read_only = True)
+    
+    class Meta:
+        model = User
+        fields = ["url", "id", "username", "user_snippets"]

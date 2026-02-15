@@ -10,11 +10,12 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.contrib.auth.models import User
 
 # Custom created imports
 from app1.permissions import IsOwnerOrReadOnly
 from app1.models import Question, Choice, Answers, Snippet
-from app1.serializers import QuestionSerializer, ChoiceSerializer, AnswersSerializer, SnippetSerializer
+from app1.serializers import QuestionSerializer, ChoiceSerializer, AnswersSerializer, SnippetSerializer, UserSerializer
 
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
@@ -303,3 +304,13 @@ class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
     # Only allow API access when the user is authenticated
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 # ----------------------------------------- 3rd way -------------------------------------------------------- #
+
+
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
