@@ -85,20 +85,42 @@ class QuestionSerializer(serializers.HyperlinkedModelSerializer):
 #     "votes": 6
 # }
 
+
 class ChoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Choice
         fields = ["id", "question", "choice_text", "votes"]
 
+
 class AnswersSerializer(serializers.HyperlinkedModelSerializer):
+    created_by = serializers.ReadOnlyField()
     class Meta:
         model = Answers
-        fields = ["id", "answer", "created_by"]
+        fields = ["id", "choice", "answer", "created_by"]
 
 
-class UserSerializer(serializers.ModelSerializer):
-    user_snippets = SnippetSerializer(many = True, source = "snippets", read_only = True)
+# class UserSerializer(serializers.ModelSerializer):
+#     user_snippets = SnippetSerializer(many = True, source = "snippets", read_only = True)
+    
+#     class Meta:
+#         model = User
+#         fields = ["url", "id", "username", "user_snippets"]
+
+
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    HyperlinkedModelSerializer automatically generates 'url' field for each User instance
+    and expects URLs to be configured properly in the viewset.
+    
+    HyperlinkedRelatedField provides hyperlinks TO related snippets instead of embedding
+    full snippet data. This follows HATEOAS principles - clients follow links to get related
+    resources rather than embedding everything inline.
+    """
+    snippets = serializers.HyperlinkedRelatedField(many = True, 
+                                                   view_name = "snippet-detail",  # Must match the URL name exactly
+                                                   read_only = True  # Client cannot POST/PUT snippet URLs - only read them
+                                                   )
     
     class Meta:
         model = User
-        fields = ["url", "id", "username", "user_snippets"]
+        fields = ["url", "id", "username", "snippets"]

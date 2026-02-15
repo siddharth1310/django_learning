@@ -11,6 +11,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
+from rest_framework.reverse import reverse
 
 # Custom created imports
 from app1.permissions import IsOwnerOrReadOnly
@@ -314,3 +315,69 @@ class UserList(generics.ListAPIView):
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+@api_view(["GET"])
+def api_root(request, format = None):
+    """
+    Root API endpoint providing hypermedia links to primary resources.
+    Discovered-style API entry point that tells clients what resources are available.
+    
+    Uses reverse() with request=request to generate fully-qualified URLs including:
+    - Current domain/protocol (http://localhost:8000)
+    - Format suffix if requested (?format=json)
+    - Proper URL names from urlconf
+    
+    Example response:
+    {
+        "users": "http://localhost:8000/users/",
+        "snippets": "http://localhost:8000/snippets/"
+    }
+    """
+    
+    return Response(
+        {
+            "users" : reverse("user-list", request = request, format = format), 
+            "snippets" : reverse("snippet-list", request = request, format = format), 
+        }
+    )
+
+
+"""
+Creating an endpoint for the highlighted snippets
+Unlike all our other API endpoints, we don't want to use JSON, but instead just present an HTML representation.
+There are two styles of HTML renderer provided by REST framework, one for dealing with HTML rendered using templates,
+the other for dealing with pre-rendered HTML. The second renderer is the one we would like to use for this endpoint.
+
+The other thing we need to consider when creating the code highlight view is that there's no existing concrete generic
+view that we can use. We are not returning an object instance, but instead a property of an object instance.
+
+Instead of using a concrete generic view, we will use the base class for representing instances, and create our own
+.get() method.
+"""
+class SnippetHighlight(generics.GenericAPIView):
+    """
+    Custom view for syntax-highlighted HTML representation of snippets.
+    
+    Key differences from JSON APIs:
+    1. Uses StaticHTMLRenderer instead of JSONRenderer - returns raw HTML
+    2. No serializer_class needed - returns snippet.highlighted (pre-rendered HTML)
+    3. No concrete generic view exists for property-based responses
+    
+    Access: /snippets/{id}/highlight/
+    Response: Raw HTML of syntax-highlighted code (Content-Type: text/html)
+    Browsable API: Shows rendered HTML directly in browser
+    """
+    
+    queryset = Snippet.objects.all()
+    renderer_classes = [renderers.StaticHTMLRenderer]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+    
+    def get(self, request, *args, **kwargs):
+        """
+        Custom .get() returns the pre-rendered highlighted HTML from snippet instance.
+        get_object() provides standard lookup + permission checks.
+        No serialization needed - highlighted field is already HTML-ready.
+        """
+        snippet = self.get_object()
+        return Response(snippet.highlighted)

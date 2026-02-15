@@ -10,9 +10,11 @@ from app1.views import (
     ChoiceViewSet, 
     AnswersViewSet,
     SnippetDetail,
+    SnippetHighlight,
     SnippetList,
     UserDetail,
-    UserList, 
+    UserList,
+    api_root, 
     index, 
     # snippet_detail, 
     # snippet_list
@@ -24,14 +26,16 @@ router.register(r"choice", ChoiceViewSet)
 router.register(r"answers", AnswersViewSet)
 
 urlpatterns = [
-    path("", index, name = "index"), 
+    # path("", index, name = "index"), 
+    path("", api_root), 
     
     # path("snippets/", snippet_list), 
     # path("snippets/<int:pk>/", snippet_detail), 
     
     path("snippets/", SnippetList.as_view(), name = "snippet-list"),  
     path("snippets/<int:pk>/", SnippetDetail.as_view(), name = "snippet-detail"), 
+    path("snippets/<int:pk>/highlight/", SnippetHighlight.as_view(), name = "snippet-highlight"), 
     
     path("users/", UserList.as_view(), name = "user-list"), 
-    path("users/<int:pk>/", UserDetail.as_view(), name = "user-detail"),
+    path("users/<int:pk>/", UserDetail.as_view(), name = "user-detail"), 
 ]
