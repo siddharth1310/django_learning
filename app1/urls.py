@@ -43,7 +43,7 @@ Because we are using ViewSet classes rather View classes, we actually don't need
 The conventions for wiring up resources into views and urls can be handled automatically, using a Router class. All
 we need to do is register the appropriate view sets with a router, let it do the rest.
 """
-router.register(r"users", UserViewSet, basename = "user")
+router.register(r"users", UserViewSet)
 router.register(r"snippets", SnippetViewSet, basename = "snippet")
 
 urlpatterns = [
@@ -58,7 +58,7 @@ urlpatterns = [
     
     # path("snippets/", SnippetList.as_view(), name = "snippet-list"),  
     # path("snippets/<int:pk>/", SnippetDetail.as_view(), name = "snippet-detail"), 
-    # path("snippets/<int:pk>/highlight/", SnippetHighlight.as_view(), name = "snippet-highlight"), 
+    path("snippets/<int:pk>/highlight/", SnippetHighlight.as_view(), name = "snippet-highlight"), 
     
     
     # NOTE - below endpoints not required if you are using ViewSet classes

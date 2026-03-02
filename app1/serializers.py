@@ -2,11 +2,14 @@
 
 # Dependent software imports
 from rest_framework import serializers
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 # Custom created imports
 from app1.models import LANGUAGE_CHOICES, STYLE_CHOICES, Question, Choice, Answers, Snippet
+from app2.models import AppUser
 
+User = get_user_model()
 
 class SnippetSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only = True)
@@ -14,7 +17,7 @@ class SnippetSerializer(serializers.Serializer):
     
     # The field flags can also control how the serializer should be displayed in certain circumstances, such as 
     # when rendering to HTML. The {'base_template' : 'textarea.html'} flag above is equivalent to using widget = widgets.
-    # Textarea of a Django Form class. This is particularly useful for controlling how the browsable API should be displayed.
+    # Textarea of a Django Form class. This is particularly useful for controlling how the browseable API should be displayed.
     code = serializers.CharField(style = {"base_template" : "textarea.html"})
     
     linenos = serializers.BooleanField(required = False)
@@ -27,7 +30,7 @@ class SnippetSerializer(serializers.Serializer):
     
     # To handle foreign key - specify the related model/queryset
     owner_id = serializers.PrimaryKeyRelatedField(
-        queryset = User.objects.all(),  # Replace User with your actual model
+        queryset = AppUser.objects.all(),  # Replace User with your actual model
         # write_only = True  # Use write_only if you don't want to expose it on GET
     )
     
@@ -120,7 +123,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
                                                    view_name = "snippet-detail",  # Must match the URL name exactly
                                                    read_only = True  # Client cannot POST/PUT snippet URLs - only read them
                                                    )
-    
     class Meta:
         model = User
-        fields = ["url", "id", "username", "snippets"]
+
+        fields = ["url", "id", "employee_id", "full_name", "email", "snippets"]

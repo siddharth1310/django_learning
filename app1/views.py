@@ -7,6 +7,7 @@ from rest_framework.reverse import reverse
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
+from django.contrib.auth import get_user_model
 from drf_spectacular.utils import extend_schema
 from django.views.decorators.csrf import csrf_exempt
 from django.http import Http404, HttpResponse, JsonResponse
@@ -18,6 +19,9 @@ from django_filters import UnknownFieldBehavior, rest_framework as filters
 from app1.permissions import IsOwnerOrReadOnly
 from app1.models import Question, Choice, Answers, Snippet
 from app1.serializers import QuestionSerializer, ChoiceSerializer, AnswersSerializer, SnippetSerializer, UserSerializer
+from app2.models import AppUser
+
+User = get_user_model()
 
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
@@ -367,7 +371,7 @@ class SnippetHighlight(generics.GenericAPIView):
     
     Access: /snippets/{id}/highlight/
     Response: Raw HTML of syntax-highlighted code (Content-Type: text/html)
-    Browsable API: Shows rendered HTML directly in browser
+    Browseable API: Shows rendered HTML directly in browser
     """
     
     queryset = Snippet.objects.all()

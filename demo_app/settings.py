@@ -50,7 +50,7 @@ DEBUG = True
 # Specify allowed hosts (your Wildfly server's IP domain)
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "your_wildfly_ip_or_domain"]
 
-# The list of extra HTTP headers to expose to the browser, in addition to the default safelisted headers.
+# The list of extra HTTP headers to expose to the browser, in addition to the default safe listed headers.
 # If non-empty, these are declared in the access-control-expose-headers header. Defaults to [].
 CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
 
@@ -266,6 +266,7 @@ LOAD_FIXTURES = True
 
 # ========================================================== DATABASE SECTION ==================================================================
 
+# ========================================================== AUTHENTICATION SECTION ==================================================================
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -282,3 +283,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = "app2.AppUser"
+
+# ========================================================== AUTHENTICATION SECTION ==================================================================

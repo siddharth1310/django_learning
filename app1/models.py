@@ -27,7 +27,7 @@ class Snippet(AuditModel):
     language = models.CharField(choices = LANGUAGE_CHOICES, default = "python", max_length = 100)
     style = models.CharField(choices = STYLE_CHOICES, default = "friendly", max_length = 100)
     
-    owner = models.ForeignKey("auth.user", related_name = "snippets", on_delete = models.CASCADE)
+    owner = models.ForeignKey("app2.AppUser", related_name = "snippets", on_delete = models.CASCADE)
     highlighted = models.TextField(default = "")
     email = EncryptedEmailField(default = "django_starter@gmail.com")
     results = EncryptedCharField(max_length = 60, default = "N/A")
@@ -42,7 +42,7 @@ class Snippet(AuditModel):
         lexer = get_lexer_by_name(self.language)
         linenos = "table" if self.linenos else False
         options = {"title" : self.title} if self.title else {}
-        formatter = HtmlFormatter(style = self.style, linenos = linenos, full = True, **options)
+        formatter = HtmlFormatter(style = self.style, linenos = linenos, full = True, **options) # type: ignore
         self.highlighted = highlight(self.code, lexer, formatter)
         super().save(*args, **kwargs)
     
