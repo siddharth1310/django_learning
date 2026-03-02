@@ -1,6 +1,13 @@
+# Python base imports - Default ones
 from pathlib import Path
 from os import environ, path
+
+# Dependent software imports
 from dotenv import load_dotenv
+
+# Custom created imports
+from _utils.logging_formatters import JSON_LINE_FORMATTER
+from _utils.logging_handlers import AppFileRoutingHandler
 
 # Load environment variables from .env file
 load_dotenv()
@@ -289,18 +296,62 @@ AUTH_USER_MODEL = "app2.AppUser"
 
 # ========================================================== LOGGING SECTION ===================================================================
 
+# ------------------------------------------------------------
+# Logging Directory Setup
+# ------------------------------------------------------------
+# All log files (central + per-app) will be written inside
+# the "logs" folder at project root level.
+#
+# BASE_DIR → Django project root
+# LOG_DIR  → BASE_DIR/logs
+#
+# mkdir(exist_ok=True) ensures:
+# - Folder is created automatically if missing
+# - No crash if it already exists
+# ------------------------------------------------------------
+
 LOG_DIR = BASE_DIR / "logs"
 LOG_DIR.mkdir(exist_ok = True)
 
+# ------------------------------------------------------------
+# Django Logging Configuration (dictConfig style)
+# ------------------------------------------------------------
+# version = 1 → Required by Python logging
+# disable_existing_loggers = False →
+#   Ensures Django’s default loggers (django.request, etc.)
+#   continue to work and are not silently disabled.
+# ------------------------------------------------------------
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    # --------------------------------------------------------
+    # FORMATTERS
+    # --------------------------------------------------------
+    # Formatters define HOW log messages look.
+    # We use:
+    #
+    # 1. jsonl   → For file-based structured logging
+    # 2. colored → For readable console output
+    # --------------------------------------------------------
     "formatters": {
-        "json": {
-            "()": "pythonjsonlogger.json.JsonFormatter",
-            "fmt": "%(asctime)s %(levelname)s %(name)s %(module)s %(filename)s %(funcName)s %(lineno)d %(message)s",
-            "datefmt": "%Y-%m-%d %H:%M:%S",
-        },
+
+        # JSONL formatter
+        # Uses a custom Formatter class that converts log
+        # records into structured JSON objects.
+        #
+        # Each log line becomes one JSON object per line.
+        # Suitable for:
+        # - Log parsing
+        # - ELK / Datadog / Splunk
+        # - Machine-readable analytics
+        "jsonl": {"()": JSON_LINE_FORMATTER},
+
+        # Colored console formatter
+        # Human-friendly, aligned output for development.
+        #
+        # - Fixed-width columns for readability
+        # - Color-coded log levels
+        # - Includes module, function, line number
         "colored": {
             "()": "colorlog.ColoredFormatter",
             "format": "%(log_color)s%(asctime)s "
@@ -312,62 +363,76 @@ LOGGING = {
             "%(lineno)05d%(reset)s "
             "%(message)s",
             "datefmt": "%Y-%m-%d %H:%M:%S",
-        }
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "colored",
-            "level": "INFO",
         },
-        # 🔹 Central log
+    },
+    # --------------------------------------------------------
+    # HANDLERS
+    # --------------------------------------------------------
+    # Handlers define WHERE logs go.
+    #
+    # We use:
+    # - console       → Terminal output
+    # - central_file  → Aggregated log file
+    # - app_router    → Dynamic per-app log files
+    # --------------------------------------------------------
+    "handlers": {
+        # Console handler
+        # Sends logs to stdout (terminal).
+        # Used primarily for development visibility.
+        "console": {"class": "logging.StreamHandler", "formatter": "colored"},
+
+        # Central log file handler
+        #
+        # - Writes ALL logs to central_log.jsonl
+        # - Rotates at 5MB
+        # - Keeps last 5 backups
+        #
+        # This acts as the master log file for the entire system.
         "central_file": {
             "class": "logging.handlers.RotatingFileHandler",
             "filename": path.join(LOG_DIR, "central_log.jsonl"),
             "maxBytes": 5 * 1024 * 1024,
             "backupCount": 5,
             "encoding": "utf-8",
-            "formatter": "json",
+            "formatter": "jsonl",
             "level": "DEBUG",
         },
-        # 🔹 App1 log
-        "app1_file": {
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": path.join(LOG_DIR, "app1.jsonl"),
-            "maxBytes": 5 * 1024 * 1024,
-            "backupCount": 5,
-            "encoding": "utf-8",
-            "formatter": "json",
-            "level": "DEBUG",
-        },
-        # 🔹 App2 log
-        "app2_file": {
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": path.join(LOG_DIR, "app2.jsonl"),
-            "maxBytes": 5 * 1024 * 1024,
-            "backupCount": 5,
-            "encoding": "utf-8",
-            "formatter": "json",
-            "level": "DEBUG",
+
+        # App router handler
+        #
+        # Custom logging.Handler implementation that:
+        # - Dynamically determines app name from logger name
+        # - Creates app-specific log file if needed
+        # - Routes logs accordingly
+        #
+        # Example:
+        #   app1.views → logs/app1.jsonl
+        #   app2.models → logs/app2.jsonl
+        #
+        "app_router": {
+            "()": AppFileRoutingHandler,
+            "base_log_dir": LOG_DIR,
+            "formatter": "jsonl",
         },
     },
+
+    # --------------------------------------------------------
+    # ROOT LOGGER
+    # --------------------------------------------------------
+    # "" represents the root logger.
+    #
+    # All loggers (app1, app2, django, etc.)
+    # eventually propagate up to the root unless explicitly disabled.
+    #
+    # Therefore:
+    # - Every log goes to central_file
+    # - Every log goes through app_router
+    # - Every log appears in console
+    # --------------------------------------------------------
     "loggers": {
-        # 🔹 ROOT LOGGER (captures everything)
         "": {
-            "handlers": ["central_file", "console"],
+            "handlers": ["central_file", "app_router", "console"],
             "level": "DEBUG",
-        },
-        # 🔹 App1 Logger
-        "app1": {
-            "handlers": ["app1_file"],
-            "level": "DEBUG",
-            "propagate": True,  # also send to central
-        },
-        # 🔹 App2 Logger
-        "app2": {
-            "handlers": ["app2_file"],
-            "level": "DEBUG",
-            "propagate": True,  # also send to central
         },
     },
 }
