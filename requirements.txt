@@ -16,3 +16,5 @@ drf-redesign
 crispy-bootstrap4
 drf-spectacular-sidecar
 Pygments
+colorlog
+python-json-logger

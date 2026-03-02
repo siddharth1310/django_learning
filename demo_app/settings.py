@@ -84,7 +84,7 @@ CSRF_TRUSTED_ORIGINS = [
 # ========================================================== DJANGO CORE SECTION ===============================================================
 
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_L10N = True  # Custom added
 USE_TZ = True
@@ -266,7 +266,7 @@ LOAD_FIXTURES = True
 
 # ========================================================== DATABASE SECTION ==================================================================
 
-# ========================================================== AUTHENTICATION SECTION ==================================================================
+# ========================================================== AUTHENTICATION SECTION ============================================================
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -285,4 +285,91 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = "app2.AppUser"
 
-# ========================================================== AUTHENTICATION SECTION ==================================================================
+# ========================================================== AUTHENTICATION SECTION ============================================================
+
+# ========================================================== LOGGING SECTION ===================================================================
+
+LOG_DIR = BASE_DIR / "logs"
+LOG_DIR.mkdir(exist_ok = True)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json": {
+            "()": "pythonjsonlogger.json.JsonFormatter",
+            "fmt": "%(asctime)s %(levelname)s %(name)s %(module)s %(filename)s %(funcName)s %(lineno)d %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+        "colored": {
+            "()": "colorlog.ColoredFormatter",
+            "format": "%(log_color)s%(asctime)s "
+            "%(levelname)-8s "
+            "%(processName)-12s "
+            "%(name)-20s "
+            "%(module)-15s:"
+            "%(funcName)-25s:"
+            "%(lineno)05d%(reset)s "
+            "%(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "colored",
+            "level": "INFO",
+        },
+        # 🔹 Central log
+        "central_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": path.join(LOG_DIR, "central_log.jsonl"),
+            "maxBytes": 5 * 1024 * 1024,
+            "backupCount": 5,
+            "encoding": "utf-8",
+            "formatter": "json",
+            "level": "DEBUG",
+        },
+        # 🔹 App1 log
+        "app1_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": path.join(LOG_DIR, "app1.jsonl"),
+            "maxBytes": 5 * 1024 * 1024,
+            "backupCount": 5,
+            "encoding": "utf-8",
+            "formatter": "json",
+            "level": "DEBUG",
+        },
+        # 🔹 App2 log
+        "app2_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": path.join(LOG_DIR, "app2.jsonl"),
+            "maxBytes": 5 * 1024 * 1024,
+            "backupCount": 5,
+            "encoding": "utf-8",
+            "formatter": "json",
+            "level": "DEBUG",
+        },
+    },
+    "loggers": {
+        # 🔹 ROOT LOGGER (captures everything)
+        "": {
+            "handlers": ["central_file", "console"],
+            "level": "DEBUG",
+        },
+        # 🔹 App1 Logger
+        "app1": {
+            "handlers": ["app1_file"],
+            "level": "DEBUG",
+            "propagate": True,  # also send to central
+        },
+        # 🔹 App2 Logger
+        "app2": {
+            "handlers": ["app2_file"],
+            "level": "DEBUG",
+            "propagate": True,  # also send to central
+        },
+    },
+}
+
+# ========================================================== LOGGING SECTION ===================================================================
