@@ -61,11 +61,13 @@ class AppFileRoutingHandler(logging.Handler):
         2. Create handler if first time seeing this app
         3. Emit record to appropriate file
         """
-
+        PROJECT_APPS = {"app1", "app2", "_utils"}  # or import from settings
         # Extract top-level logger name
         # Example:
         #   app1.views → app1
         logger_name = record.name.split(".")[0]
+        if logger_name not in PROJECT_APPS:
+            return  # ignore non-project logs
 
         file_path = path.join(self.base_log_dir, f"{logger_name}.jsonl")
 
