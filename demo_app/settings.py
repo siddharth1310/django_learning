@@ -1,6 +1,7 @@
 # Python base imports - Default ones
 from pathlib import Path
 from os import environ, path
+from datetime import timedelta
 
 # Dependent software imports
 from dotenv import load_dotenv
@@ -49,7 +50,7 @@ print(new_key)
 FIELD_ENCRYPTION_KEY = environ.get("FIELD_ENCRYPTION_KEY", "")
 
 SESSION_EXPIRE_AGE = environ.get("FIELD_ENCRYPTION_KEY", "")  # 20 min expiry since last activity
-MAX_USER_SESSIONS = 3  # Allow only 3 concurrent user locations
+MAX_USER_SESSIONS = 3  # Allow only 3 concurrent user sessions
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -132,10 +133,12 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap4",
     "drf_spectacular_sidecar",
+    "rest_framework_simplejwt.token_blacklist",
     
     # Custom apps
     "app1.apps.App1Config",
     "app2.apps.App2Config",
+    "_utils.apps.UtilsConfig"
 ]
 
 MIDDLEWARE = [
@@ -160,6 +163,13 @@ MIDDLEWARE = [
 ROOT_URLCONF = "demo_app.urls"
 
 REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES" : (
+        "rest_framework_simplejwt.authentication.JWTAuthentication", 
+        "rest_framework.authentication.BasicAuthentication", 
+        "rest_framework.authentication.SessionAuthentication", 
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication" 
+    ),
+
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     
@@ -275,6 +285,13 @@ LOAD_FIXTURES = True
 
 # ========================================================== AUTHENTICATION SECTION ============================================================
 
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME" : timedelta(minutes = 10), 
+    "REFRESH_TOKEN_LIFETIME" : timedelta(days = 7), 
+    "ROTATE_REFRESH_TOKENS" : True, 
+    "BLACKLIST_AFTER_ROTATION" : True
+}
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -288,6 +305,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
+    {
+        "NAME": "app2.custom_password_validator.AppPasswordValidator",
+    }
 ]
 
 AUTH_USER_MODEL = "app2.AppUser"
