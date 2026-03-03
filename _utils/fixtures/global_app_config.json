@@ -1,0 +1,142 @@
+[
+    {
+        "model": "_utils.GlobalAppConfig",
+        "pk": 1,
+        "fields": {
+            "version": 0,
+            "created_date": "2026-01-01T00:00:00+00:00",
+            "created_by": "admin",
+            "modified_date": "2026-01-01T00:00:00+00:00",
+            "modified_by": "admin",
+            "category": "security",
+            "name": "password_age",
+            "value": 90
+        }
+    },
+    {
+        "model": "_utils.GlobalAppConfig",
+        "pk": 2,
+        "fields": {
+            "version": 0,
+            "created_date": "2026-01-01T00:00:00+00:00",
+            "created_by": "admin",
+            "modified_date": "2026-01-01T00:00:00+00:00",
+            "modified_by": "admin",
+            "category": "security",
+            "name": "password_limit",
+            "value": 5
+        }
+    },
+    {
+        "model": "_utils.GlobalAppConfig",
+        "pk": 3,
+        "fields": {
+            "version": 0,
+            "created_date": "2026-01-01T00:00:00+00:00",
+            "created_by": "admin",
+            "modified_date": "2026-01-01T00:00:00+00:00",
+            "modified_by": "admin",
+            "category": "security",
+            "name": "auth_retries",
+            "value": 3
+        }
+    },
+    {
+        "model": "_utils.GlobalAppConfig",
+        "pk": 4,
+        "fields": {
+            "version": 0,
+            "created_date": "2026-01-01T00:00:00+00:00",
+            "created_by": "admin",
+            "modified_date": "2026-01-01T00:00:00+00:00",
+            "modified_by": "admin",
+            "category": "security",
+            "name": "password_min_length",
+            "value": 8
+        }
+    },
+    {
+        "model": "_utils.GlobalAppConfig",
+        "pk": 5,
+        "fields": {
+            "version": 0,
+            "created_date": "2026-01-01T00:00:00+00:00",
+            "created_by": "admin",
+            "modified_date": "2026-01-01T00:00:00+00:00",
+            "modified_by": "admin",
+            "category": "security",
+            "name": "require_uppercase",
+            "value": true
+        }
+    },
+    {
+        "model": "_utils.GlobalAppConfig",
+        "pk": 6,
+        "fields": {
+            "version": 0,
+            "created_date": "2026-01-01T00:00:00+00:00",
+            "created_by": "admin",
+            "modified_date": "2026-01-01T00:00:00+00:00",
+            "modified_by": "admin",
+            "category": "security",
+            "name": "require_lowercase",
+            "value": true
+        }
+    },
+    {
+        "model": "_utils.GlobalAppConfig",
+        "pk": 7,
+        "fields": {
+            "version": 0,
+            "created_date": "2026-01-01T00:00:00+00:00",
+            "created_by": "admin",
+            "modified_date": "2026-01-01T00:00:00+00:00",
+            "modified_by": "admin",
+            "category": "security",
+            "name": "require_numeric",
+            "value": true
+        }
+    },
+    {
+        "model": "_utils.GlobalAppConfig",
+        "pk": 8,
+        "fields": {
+            "version": 0,
+            "created_date": "2026-01-01T00:00:00+00:00",
+            "created_by": "admin",
+            "modified_date": "2026-01-01T00:00:00+00:00",
+            "modified_by": "admin",
+            "category": "security",
+            "name": "require_special",
+            "value": true
+        }
+    },
+    {
+        "model": "_utils.GlobalAppConfig",
+        "pk": 9,
+        "fields": {
+            "version": 0,
+            "created_date": "2026-01-01T00:00:00+00:00",
+            "created_by": "admin",
+            "modified_date": "2026-01-01T00:00:00+00:00",
+            "modified_by": "admin",
+            "category": "security",
+            "name": "special_characters",
+            "value": "[!@#$%^&*()_+={}:;\"\\'<>,.?/]"
+        }
+    },
+    {
+        "model": "_utils.GlobalAppConfig",
+        "pk": 10,
+        "fields": {
+            "version": 0,
+            "created_date": "2026-01-01T00:00:00+00:00",
+            "created_by": "admin",
+            "modified_date": "2026-01-01T00:00:00+00:00",
+            "modified_by": "admin",
+            "category": "security",
+            "name": "password_max_length",
+            "value": 64
+        }
+    }
+]
