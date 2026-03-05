@@ -22,10 +22,12 @@ from rest_framework.routers import DefaultRouter
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 from app1.urls import router as app1_router
+from file_mgr.urls import router as file_mgr_router
 
 # Routers provide a way of automatically determining the URL conf.
 router = DefaultRouter()
 router.registry.extend(app1_router.registry)
+router.registry.extend(file_mgr_router.registry)
 
 urlpatterns = [
     # Django Restframework routers
@@ -49,4 +51,5 @@ urlpatterns = [
     # Custom apps routers
     path("app1/", include("app1.urls")),
     path("app2/", include("app2.urls")),
+    path("file_mgr/", include("file_mgr.urls")),
 ]

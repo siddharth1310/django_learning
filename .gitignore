@@ -30,6 +30,11 @@ logs/*
 # Except .gitkeep to keep 'logs' folder present in git
 !logs/.gitkeep
 
+# Ignore all files and folders inside 'logs' folder
+uploaded/*
+# Except .gitkeep to keep 'logs' folder present in git
+!uploaded/.gitkeep
+
 # Project Files
 .env
 *.zip

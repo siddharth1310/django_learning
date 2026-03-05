@@ -138,7 +138,8 @@ INSTALLED_APPS = [
     # Custom apps
     "app1.apps.App1Config",
     "app2.apps.App2Config",
-    "_utils.apps.UtilsConfig"
+    "_utils.apps.UtilsConfig",
+    "file_mgr.apps.FileMgrConfig"
 ]
 
 MIDDLEWARE = [
