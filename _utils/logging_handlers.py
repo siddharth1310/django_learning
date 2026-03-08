@@ -61,7 +61,9 @@ class AppFileRoutingHandler(logging.Handler):
         2. Create handler if first time seeing this app
         3. Emit record to appropriate file
         """
-        PROJECT_APPS = {"app1", "app2", "_utils"}  # or import from settings
+
+        # TODO - Very important, add your Apps here to enable logger mechanism
+        PROJECT_APPS = {"app1", "app2", "_utils", "file_mgr"}
         # Extract top-level logger name
         # Example:
         #   app1.views → app1

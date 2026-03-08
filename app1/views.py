@@ -18,7 +18,7 @@ from django_filters import UnknownFieldBehavior, rest_framework as filters
 # Custom created imports
 from app1.permissions import IsOwnerOrReadOnly
 from app1.models import Question, Choice, Answers, Snippet
-from app1.serializers import QuestionSerializer, ChoiceSerializer, AnswersSerializer, SnippetSerializer, UserSerializer
+from app1.serializers import CreateRequestSerializer, QuestionSerializer, ChoiceSerializer, AnswersSerializer, SnippetHighlightSerializer, SnippetSerializer, UserSerializer
 from app2.models import AppUser
 
 User = get_user_model()
@@ -334,10 +334,12 @@ def api_root(request, format = None):
     - Proper URL names from urlconf
     
     Example response:
+    ```
     {
         "users": "http://localhost:8000/users/",
         "snippets": "http://localhost:8000/snippets/"
     }
+    ```
     """
     
     return Response(
@@ -375,6 +377,7 @@ class SnippetHighlight(generics.GenericAPIView):
     """
     
     queryset = Snippet.objects.all()
+    serializer_class = SnippetHighlightSerializer
     renderer_classes = [renderers.StaticHTMLRenderer]
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
     
@@ -516,9 +519,11 @@ class SnippetViewSet(viewsets.ModelViewSet):
 
 @permission_classes([permissions.IsAuthenticated])
 class CreateRequestFromJSON(APIView):
-    def post (self, request, format = None):
-        try:
-            input_request = request.data
-            return Response(input_request, status = status.HTTP_200_OK)
-        except Exception:
-            return Response(status = status.HTTP_400_BAD_REQUEST)
+
+    serializer_class = CreateRequestSerializer
+
+    def post(self, request, format = None):
+        serializer = self.serializer_class(data = request.data)
+        if serializer.is_valid():
+            return Response(serializer.validated_data, status = status.HTTP_200_OK)
+        return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)

@@ -106,6 +106,7 @@ class AuthService:
         📊 ACCOUNT STATUS INSPECTION (Admin/Security)
         
         RETURNS:
+        ```
         {
             "exists": true/false,
             "is_locked": true/false,
@@ -113,6 +114,7 @@ class AuthService:
             "max_attempts": 5,
             "password_age_days": 45  # days since last change
         }
+        ```
         """
         try:
             user = AppUser.objects.get(employee_id = employee_id)

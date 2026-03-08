@@ -127,3 +127,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
 
         fields = ["url", "id", "employee_id", "full_name", "email", "snippets"]
+
+
+class SnippetHighlightSerializer(serializers.Serializer):
+    highlighted = serializers.CharField()
+
+
+class CreateRequestSerializer(serializers.Serializer):
+    data = serializers.JSONField() # type: ignore

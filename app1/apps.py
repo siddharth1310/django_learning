@@ -1,5 +1,10 @@
-from django.apps import AppConfig
+# Python base imports - Default ones
 import logging
+
+# Dependent software imports
+from django.apps import AppConfig
+
+# Custom created imports
 
 class App1Config(AppConfig):
     name = "app1"

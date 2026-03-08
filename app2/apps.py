@@ -1,12 +1,14 @@
-# app2/apps.py - NO DATABASE ACCESS!
-from django.apps import AppConfig
+# Python base imports - Default ones
 import logging
+
+# Dependent software imports
+from django.apps import AppConfig
+
+# Custom created imports
 
 class App2Config(AppConfig):
     name = "app2"
-    
+
     def ready(self):
-        """✅ NO DB → NO WARNING!"""
-        logger = logging.getLogger(__name__)
-        logger.info("🎛️ App2 ready - SecurityConfigManager auto-initializes on first use")
-        # Lazy loading handles everything!
+        self.logger = logging.getLogger(__name__)
+        self.logger.info(f"{self.name} Initializing Started, SecurityConfigManager auto-initializes on first use")
